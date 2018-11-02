@@ -3,7 +3,7 @@ output: html_document
 editor_options: 
   chunk_output_type: inline
 ---
-Fabio Tosetto Reale
+Fabio Tosetto Reale - Exploration on _Vinho Verde_ Wine
 ========================================================
 
 > **Tip**: You will see quoted sections like this throughout the template to
@@ -69,7 +69,8 @@ for white wines.
 
 These data sets can, of course, be analyzed separetly.
 However, I'm interested to see if there are significant diferences between the
-red and white variants, both in chemical measures and in evaluated scores.
+red and white variants, both in physicochemical measures and in evaluated
+scores.
 It's important to observe the data is overrepresented by white wines.
 
 ```{r echo=FALSE, summary_1}
@@ -82,7 +83,7 @@ str(wine)
 
 ```{r echo=FALSE, summary_last_data_transformation}
 wine$quality.as.factor <- factor(wine$quality, ordered = TRUE,
-                                levels = seq(3,9,1))
+                                  levels = seq(3,9,1))
 
 rw <- subset(wine, variant == "red")
 ww <- subset(wine, variant == "white")
@@ -134,7 +135,7 @@ ggplot(wine, aes(sulphates)) +
 ```
 
 Sulphates are often said to be the culprit in wine related head aches.
-And red wine is said to cause more and more severe head aches.
+And red wine is said to cause more often and more severe head aches.
 There doesn't seem to be significant differences in the distributions, but I'll
 investigate this a little more.
 
@@ -154,6 +155,9 @@ ggplot(data = wine, aes(citric.acid)) +
   geom_histogram(bins = 30)
 ```
 
+All of the acidity variables seem to somewhat follow a normal distribution.
+There might still be some interesting relationship between these variables.
+
 ```{r echo=FALSE, Univariate_Sugar}
 ggplot(wine, aes(residual.sugar)) +
   geom_histogram(bins = 30)
@@ -163,12 +167,10 @@ ggplot(wine, aes(residual.sugar)) +
   facet_wrap( ~ variant)
 ```
 
-Interesting, I expected _residual.sugar_ to correlate strongly with _alcohol_
-since the sugar is converted to alcohol in the fermentation process.
-I guess, then, we needed _starting.sugar.amount_ for high correlation.
+Interesting, I expected _residual.sugar_ to inversely correlate strongly with _alcohol_ since the sugar is converted to alcohol in the fermentation process.
+But that doesn't seem likely anymore, due to how different the histograms look.
 
-Also, dry wines are likely the ones with the least amounts of _residual.sugar_, 
-so it looks like white wines are more likely sweet then red wines.
+Also, dry wines are likely the ones with the least amounts of _residual.sugar_, so it looks like white wines are more likely sweet then red wines.
 
 ```{r echo=FALSE, Univariate_Quality}
 ggplot(wine, aes(quality.as.factor)) +
@@ -180,50 +182,17 @@ ggplot(wine, aes(quality.as.factor)) +
   facet_wrap( ~ variant) +
   xlab("quality")
 
-ggplot(data = wine, aes(quality.as.factor)) +
-  geom_bar(aes(fill = variant)) +
-  xlab("quality") +
-  scale_fill_manual(values=c(redw.col, whitew.col))
+# After some consideration, I decided not to include this next plot
+# but I'll leave it here as a reference
+
+#ggplot(data = wine, aes(quality.as.factor)) +
+  #geom_bar(aes(fill = variant)) +
+  #xlab("quality") +
+  #scale_fill_manual(values=c(redw.col, whitew.col))
 ```
 
-```{r echo=FALSE}
-plr <- ggplot(rw, aes(alcohol)) +
-        geom_histogram(bins = 30, aes(y = (..count..)/sum(..count..)),
-                       fill = redw.col, color = "black") +
-        scale_y_continuous(labels = scales::percent, limits = c(0,0.16)) +
-        scale_x_continuous(breaks = seq(8,15,1)) +
-        ylab("relative frequencies") +
-        xlab("alcohol (reds)")
-plw <- ggplot(ww, aes(alcohol)) +
-        geom_histogram(bins = 30, aes(y = (..count..)/sum(..count..)),
-                       fill = whitew.col, color = "black") +
-        scale_y_continuous(labels = scales::percent, limits = c(0,0.16)) +
-        scale_x_continuous(breaks = seq(8,15,1)) +
-        ylab("relative frequencies") +
-        xlab("alcohol (whites)")
-
-grid.arrange(plr, plw, ncol=1)
-```
-```{r echo=FALSE}
-plr <- ggplot(rw, aes(sulphates)) +
-        geom_histogram(bins = 30, aes(y = (..count..)/sum(..count..)),
-                       fill = redw.col, color = "black") +
-        scale_y_continuous(labels = scales::percent, limits = c(0,0.32)) +
-        scale_x_continuous(limits = c(0,2.2), breaks = seq(0,2.2,0.2)) +
-        ylab("relative frequencies") +
-        xlab("sulphates (reds)")
-plw <- ggplot(ww, aes(sulphates)) +
-        geom_histogram(bins = 30, aes(y = (..count..)/sum(..count..)),
-                       fill = whitew.col, color = "black") +
-        scale_y_continuous(labels = scales::percent, limits = c(0,0.32)) +
-        scale_x_continuous(limits = c(0,2.2), breaks = seq(0,2.2,0.2)) +
-        ylab("relative frequencies") +
-        xlab("sulphates (whites)")
-
-grid.arrange(plr, plw, ncol=1)
-```
-
-
+_Quality_ is overwhelmingly 5 or 6 for both wines. The side by side plot seem
+to indicate that white wines are slightly better evaluated.
 
 > **Tip**: Make sure that you leave a blank line between the start / end of
 each code block and the end / start of your Markdown text so that it is
@@ -246,7 +215,7 @@ red or white wine.
 
 The variables are:
  
- * 11 quantitative mesures, like _pH_ or _alcohol_ (in % by volume).
+ * 11 quantitative mesures, like _alcohol_ (in % by volume) or _pH_.
  
  * 1 numerical qualitative sensory evaluation. Given as the median of at least
  3 evaluations made by wine experts. Scale ranges from 0 (_bad_) to 10 (_good_).
@@ -260,16 +229,16 @@ There are also 2 variables added:
  * 1 agregate variable _total.acidity_ and was created beacause this information
  is usually provided on labels.
 
-Most variables seem to follow a bell-shaped distribution.
-None of them seem to be Gaussian, though.
+Most variables seem to follow a bell-shaped distribution, but not necessarily
+Gaussian.
 The _alcohol_ variable seem to have a more spread out distribution while
-_residual.sugar_ left skewed.
+_residual.sugar_ appears to be left skewed.
 
 Surprisingly, so far, red and white wines seem to follow the same distribution
-on all of the investigated variables.
-Even more surprisingly, the variable that seems most likely to be differently
-distributed is the score, which looks like it might be skewed in favor of the
-white variaty.
+on all of the investigated variables, with the possible exeptions of _alcohol_
+and _quality_.
+Curiously, both of these exceptions appear to be skewed in favor of larger
+values for the white variaty.
 
 ### What is/are the main feature(s) of interest in your dataset?
 
@@ -280,7 +249,7 @@ in labels.
 I'm also interested in the _variant_ variable. Specifically, I'm curious if the
 physicochemical variables could indicate subtle categorical differences in the
 variants.
-Regariding the variants, I'm also interested to see if there is a bias in the
+Regarding the variants, I'm also interested to see if there is a bias in the
 expert community in evaluating these wines.
 
 ### What other features in the dataset do you think will help support your \
@@ -295,13 +264,14 @@ There is the obvious _pH_ variable, but flavors come with which type of acid is
 present and in which concentration.
 The variables _fixed.acidity_, _volatile.acidity_, and _citric.acid_ should
 help.
+Unfortunately, none of the variables are related to _tannin_ as far as I could find. These are supposed to be complex organic molecules and don't seem to relate to any of the chemical quantities described in the data.
 
 ### Did you create any new variables from existing variables in the dataset?
 
 Yes, I created _total.acidity_. It is just the sum of 2 other variables,
 _fixed.acidity_ and _volatile.acidity_ but the interest in this particular
-quantity is due to the fact that this is the information contained in labels.
-
+quantity is due to the fact that this is the information most universaly
+contained in labels.
 
 # Bivariate Plots Section
 
@@ -324,7 +294,7 @@ ggplot(data = wine, aes(quality, alcohol)) +
   facet_wrap( ~ variant)
 ```
 
-Looks like the higer score wines are more alcoholic.
+Looks like the higer _quality_ wines are more alcoholic.
 Let's see if a box plot looks better.
 
 ```{r echo=FALSE, Bivariate_Quality_Alcohol_2}
@@ -342,6 +312,27 @@ The median level of _alcohol_ is clearly increasing with score.
 There are quite a few outliers with high _alcohol_ level and _quality_ score of
 5, though.
 
+Also, the distribution for _alcohol_ now seems to be the same for red and white
+wines, so I'll just plot a qq-plot.
+
+```{r echo=FALSE, QQ_Alcohol}
+# Plotting a qq plot where the points are the percentiles
+  # percent is a vector with the probability to pass in the quantile function.
+# Then, geom_point must get these points in the aes() wrapper.
+# Notice that rw and ww are subsets of wine containing, respectively,
+  # only red or white wines.
+# Finally, we call geom_abline to plot a dashed y = x line.
+percent <- seq(0.01, 1.0, 0.01)
+ggplot() +
+  geom_point(aes(x = quantile(rw$alcohol, percent),
+                 y = quantile(ww$alcohol, percent))) +
+  geom_abline(intercept = 0, slope = 1, linetype = "dashed") +
+  xlab("alcohol (reds)") +
+  ylab("alcohol (whites)")
+```
+
+The distributions are close enough to one another to be considered the same.
+
 ```{r echo=FALSE, Bivariate_Quality_Acidity}
 ggplot(wine, aes(quality.as.factor, total.acidity)) +
   geom_boxplot() +
@@ -353,22 +344,17 @@ ggplot(wine, aes(quality.as.factor, total.acidity)) +
   facet_wrap( ~ variant)
 ```
 
-Interquartile range seems to be decreasing whith the increase in _quality_.
-There seem to be some difference in the acidity distributions of red and white
-wines.
+Interquartile range seems to be *decreasing* whith the increase in _quality_ in
+the agregate, but *increasing* for each _variant_.
+
+There also seem to be some difference in the acidity distributions of red and
+white wines.
 I'll plot a qq-plot to find out.
 
 ```{r echo=FALSE, QQ_Acidity}
-# Plotting a qq plot where the points are the percentiles
-  # percent is a vector with the probability to pass in the quantile function.
-# Then, geom_point must get these points in the aes() wrapper.
-# Notice that rw and ww are subsets of wine containing, respectively,
-  # only red or white wines.
-# Finally, we call geom_abline to plot a dashed y = x line.
-percent <- seq(0.01, 1.0, 0.01)
 ggplot() +
-  geom_point(
-    aes(x = quantile(rw$total.acidity, percent), y = quantile(ww$total.acidity, percent))) +
+  geom_point(aes(x = quantile(rw$total.acidity, percent),
+                 y = quantile(ww$total.acidity, percent))) +
   geom_abline(intercept=0, slope=1, linetype = "dashed") +
   xlab("total acidity (reds)") +
   ylab("total acidity (whites)")
@@ -376,9 +362,23 @@ ggplot() +
 
 Alright, that settles it. Red wines are definetly more acidic.
 
-Now, getting back to avaluating quality.
+Now, getting back to quality, let's see if _citric.acid_ gives us some insight.
 
-```{r echo=FALSE, Bivariate_Quality_Sugar}
+```{r echo=FALSE}
+ggplot(wine, aes(quality.as.factor, citric.acid)) +
+  geom_boxplot() +
+  xlab("quality")
+
+ggplot(wine, aes(quality.as.factor, citric.acid)) +
+  geom_boxplot() +
+  xlab("quality") +
+  facet_wrap( ~ variant)
+```
+
+Now, that is interesting! The _citric.acid_ variable seems to predict _quality_
+for red wines only.
+
+```{r echo=FALSE, warning=FALSE, Bivariate_Quality_Sugar}
 ggplot(wine, aes(quality.as.factor, residual.sugar)) +
   geom_boxplot() +
   scale_y_continuous(limits = c(0,35))+
@@ -391,12 +391,46 @@ ggplot(wine, aes(quality.as.factor, residual.sugar)) +
   xlab("quality")
 ```
 
-In both those boxplots there is an omission, a white wine outlier with 65.8 g/L
-in _residual sugar_.
+In all of the above boxplots there is an omission, a white wine outlier with 65.8 g/L in _residual sugar_.
+
 ```{r echo=FALSE}
-outlier <- subset(wine, residual.sugar > 40, select = c("residual.sugar", "variant", "quality"))
-outlier
+subset(wine, residual.sugar > 40,
+       select = c("quality", "variant","residual.sugar", "alcohol",
+                  "total.acidity"))
 ```
+
+We can observe the median values go up and down with _quality_ due to the white
+wines.
+Red wines have a veri consistent median across all _quality_ values, which was
+to be expected since most _residual.sugar_ values are in a very narrow band of
+values.
+Also, white wines are largely sweeter then reds in their distributions, no
+qq-plot required for this observation.
+
+```{r echo=FALSE, Bivariate_Quality_Sulphates}
+ggplot(wine,aes(quality.as.factor,sulphates)) +
+  geom_boxplot() +
+  xlab("quality")
+
+ggplot(wine,aes(quality.as.factor,sulphates)) +
+  geom_boxplot() +
+  facet_wrap(~variant) +
+  xlab("quality")
+```
+
+Much like _citric.acid_, median _sulphates_ values increase with _quality_.
+Let's see if there is some interesting relationship between them.
+
+```{r echo=FALSE, Bivariate_Red_Citric_Sulphates}
+ggplot(wine, aes(citric.acid, sulphates)) +
+  geom_point(alpha=0.1)
+
+ggplot(wine, aes(citric.acid, sulphates)) +
+  geom_point(alpha=0.1) +
+  facet_wrap( ~ variant)
+```
+
+Disappointing! I'll investigate in more detail later.
 
 ```{r echo=FALSE, Bivariate_Acidity_Alcohol}
 ggplot(wine, aes(alcohol, total.acidity)) +
@@ -411,14 +445,32 @@ ggplot(wine, aes(alcohol, pH)) +
   facet_wrap( ~ variant)
 ```
 
-```{r , qqplot_test}
-percent <- seq(0.01, 1.0, 0.01)
-ggplot() +
-  geom_point(aes(x = quantile(ww$alcohol, percent), y = quantile(rw$alcohol, percent))) +
-  geom_abline(intercept=0, slope=1, color = "#a8064a", linetype = "dashed") +
-  xlab("alcohol percentiles (whites)") +
-  ylab("alcohol percentiles (reds)")
+Experts advocate for a balance in alcohol and acidity.
+I would expect from that for _alcohol_ and _total.acidity_ to show some sort of
+correlate tendency.
+The fact they don't might explain why most wines are not well evaluated.
+
+```{r echo=FALSE, Bivariate_Acidities}
+ggplot(wine, aes(fixed.acidity, volatile.acidity)) +
+  geom_point(alpha = 0.1)
+
+ggplot(wine, aes(fixed.acidity, volatile.acidity)) +
+  geom_point(alpha = 0.1) +
+  facet_wrap( ~ variant)
 ```
+
+```{r echo=FALSE, Bivariate_Fixed_Citrics}
+ggplot(wine, aes(fixed.acidity, citric.acid)) +
+  geom_point(alpha = 0.1)
+
+ggplot(wine, aes(fixed.acidity, citric.acid)) +
+  geom_point(alpha = 0.1) +
+  facet_wrap( ~ variant)
+```
+
+White wines are contained in narrow bands in the acidity categories.
+For red wines, _citric.acid_ and _fixed.acid_ are well correlated.
+
 # Bivariate Analysis
 
 > **Tip**: As before, summarize what you found in your bivariate explorations
@@ -428,11 +480,27 @@ here. Use the questions below to guide your discussion.
 investigation. How did the feature(s) of interest vary with other features in \
 the dataset?
 
+Overall, only alcohol seems to have any kind of significant relationship with
+_quality_.
+This looks to be the case for white wines, which are overrepresented in the
+data set.
+For red wines, _alcohol_, _sulphates_ and _citric.acid_ seemed to relate to
+_quality_.
+
+As for distinguishing the _variant_ variable, in adition to _sulphates_ and _citric.acid_, _residual.sugar_ are likely distributed differently between
+variants.
+
 ### Did you observe any interesting relationships between the other features \
 (not the main feature(s) of interest)?
 
+Strangely, no. Even _sulphates_ and _citric.acid_ that are both related to 
+_quality_ don't seem to relate to one another.
+
 ### What was the strongest relationship you found?
 
+Overall, the relationship of _alcohol_ and _quality_ was the strongest.
+When restricting to red wines, I would say _citric.acid_ and _quality_ showed
+the strongest relationship.
 
 # Multivariate Plots Section
 
@@ -443,8 +511,61 @@ create here are justified by the plots you explored in the previous section. If
 you plan on creating any mathematical models, this is the section where you
 will do that.
 
-```{r echo=FALSE, Multivariate_Plots}
+```{r echo=FALSE, Citric_Sulphates}
+ggplot(wine, aes(citric.acid, sulphates)) +
+  geom_point(aes(color = quality.as.factor)) +
+  facet_wrap( ~ variant) +
+  scale_x_continuous(limits = c(0,1))
 
+ggplot(subset(wine, quality < 5 | quality > 6), aes(citric.acid, sulphates)) +
+  geom_point(aes(color = quality.as.factor)) +
+  facet_wrap( ~ variant)
+```
+
+```{r echo=FALSE, Citric_Sulphates}
+ggplot(wine, aes(citric.acid, sulphates)) +
+  geom_point(aes(color = variant)) +
+  facet_wrap( ~ quality.as.factor) +
+  scale_color_manual(values=c(redw.col, whitew.col)) +
+  scale_x_continuous(limits = c(0,1))
+
+ggplot(subset(wine, quality < 5 | quality > 6), aes(citric.acid, sulphates)) +
+  geom_point(aes(color = variant)) +
+  facet_wrap( ~ quality.as.factor) +
+  scale_color_manual(values=c(redw.col, whitew.col)) +
+  scale_x_continuous(limits = c(0,1))
+```
+
+```{r echo=FALSE}
+ggplot(wine, aes(citric.acid, alcohol)) +
+  geom_point(aes(color = quality.as.factor)) 
+
+ggplot(wine, aes(citric.acid, alcohol)) +
+  geom_point(aes(color = quality.as.factor)) +
+  facet_wrap( ~ variant)
+
+ggplot(wine, aes(citric.acid, alcohol)) +
+  geom_point(aes(color = variant)) 
+
+ggplot(wine, aes(citric.acid, alcohol)) +
+  geom_point(aes(color = variant)) +
+  facet_wrap( ~ quality.as.factor)
+```
+
+```{r echo=FALSE}
+ggplot(wine, aes(sulphates, alcohol)) +
+  geom_point(aes(color = quality.as.factor)) 
+
+ggplot(wine, aes(sulphates, alcohol)) +
+  geom_point(aes(color = quality.as.factor)) +
+  facet_wrap( ~ variant)
+
+ggplot(wine, aes(sulphates, alcohol)) +
+  geom_point(aes(color = variant)) 
+
+ggplot(wine, aes(sulphates, alcohol)) +
+  geom_point(aes(color = variant)) +
+  facet_wrap( ~ quality.as.factor)
 ```
 
 # Multivariate Analysis
@@ -504,3 +625,45 @@ future work that could be done with the dataset.
 
 > **Tip**: Don't forget to remove this, and the other **Tip** sections before
 saving your final work and knitting the final report!
+
+
+------
+
+# Not sure if this fits somewhere
+
+```{r echo=FALSE}
+plr <- ggplot(rw, aes(alcohol)) +
+        geom_histogram(bins = 30, aes(y = (..count..)/sum(..count..)),
+                       fill = redw.col, color = "black") +
+        scale_y_continuous(labels = scales::percent, limits = c(0,0.16)) +
+        scale_x_continuous(breaks = seq(8,15,1)) +
+        ylab("relative frequencies") +
+        xlab("alcohol (reds)")
+plw <- ggplot(ww, aes(alcohol)) +
+        geom_histogram(bins = 30, aes(y = (..count..)/sum(..count..)),
+                       fill = whitew.col, color = "black") +
+        scale_y_continuous(labels = scales::percent, limits = c(0,0.16)) +
+        scale_x_continuous(breaks = seq(8,15,1)) +
+        ylab("relative frequencies") +
+        xlab("alcohol (whites)")
+
+grid.arrange(plr, plw, ncol=1)
+```
+```{r echo=FALSE}
+plr <- ggplot(rw, aes(sulphates)) +
+        geom_histogram(bins = 30, aes(y = (..count..)/sum(..count..)),
+                       fill = redw.col, color = "black") +
+        scale_y_continuous(labels = scales::percent, limits = c(0,0.32)) +
+        scale_x_continuous(limits = c(0,2.2), breaks = seq(0,2.2,0.2)) +
+        ylab("relative frequencies") +
+        xlab("sulphates (reds)")
+plw <- ggplot(ww, aes(sulphates)) +
+        geom_histogram(bins = 30, aes(y = (..count..)/sum(..count..)),
+                       fill = whitew.col, color = "black") +
+        scale_y_continuous(labels = scales::percent, limits = c(0,0.32)) +
+        scale_x_continuous(limits = c(0,2.2), breaks = seq(0,2.2,0.2)) +
+        ylab("relative frequencies") +
+        xlab("sulphates (whites)")
+
+grid.arrange(plr, plw, ncol=1)
+```
