@@ -3,17 +3,8 @@ output: html_document
 editor_options: 
   chunk_output_type: inline
 ---
-Fabio Tosetto Reale - Exploration on _Vinho Verde_ Wine
+Exploration on _Vinho Verde_ Wine by Fabio Tosetto Reale
 ========================================================
-
-> **Tip**: You will see quoted sections like this throughout the template to
-help you construct your report. Make sure that you remove these notes before
-you finish and submit your project!
-
-> **Tip**: One of the requirements of this project is that your code follows
-good formatting techniques, including limiting your lines to 80 characters or
-less. If you're using RStudio, go into Preferences \> Code \> Display to set up
-a margin line to help you keep track of this guideline!
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, packages}
 # Load all of the packages that you end up using in your analysis in this code
@@ -49,13 +40,9 @@ wine <- transform(wine, total.acidity = fixed.acidity + volatile.acidity)
 
 # defining conveniently named string variables.
 # To be used in plots to color points with intuitive wine colors.
-redw.col <- "#a8064a"
-whitew.col <- "#ddd496"
+redw.color <- "#a8064a"
+whitew.color <- "#eddb8e"
 ```
-
-> **Tip**: Before you create any plots, it is a good idea to provide a short
-introduction into the dataset that you are planning to explore. Replace this
-quoted text with that general information!
 
 The data set explored here contains information on 6497 red and white variants
 of _Vinho Verde_ wine. _Vinho Verde_ is a denomination of controlled origin,
@@ -93,13 +80,6 @@ summary(wine)
 
 # Univariate Plots Section
 
-> **Tip**: In this section, you should perform some preliminary exploration of
-your dataset. Run some summaries of the data and create univariate plots to
-understand the structure of the individual variables in your dataset. Don't
-forget to add a comment after each plot or closely-related group of plots!
-There should be multiple code chunks and text sections; the first one below is
-just to help you get started.
-
 ```{r echo=FALSE, Univariate_Variant_distribution}
 ggplot(wine, aes(variant)) +
   geom_bar()
@@ -107,8 +87,6 @@ ggplot(wine, aes(variant)) +
 
 This will be a good visual reminder of how overrepresented white wines are in
 this data set.
-
-### Alcohol levels
 
 ```{r echo=FALSE, Univariate_Alcohol}
 ggplot(wine, aes(alcohol)) +
@@ -127,8 +105,6 @@ the distributions are different it seems whites would be more alcoholic.
 But it might be an artifice of the inbalance of the data.
 This requires further investigation.
 
-### Sulphates
-
 ```{r echo=FALSE, Univariate_Sulphates}
 ggplot(wine, aes(sulphates)) +
   geom_histogram(bins = 30)
@@ -143,14 +119,11 @@ And red wine is said to cause more often and more severe head aches.
 There doesn't seem to be significant differences in the distributions, but I'll
 investigate this a little more.
 
-### Density
-
 ```{r echo=FALSE, Univariate_Density}
 ggplot(wine, aes(density)) +
   geom_histogram(binwidth = 0.0005)
 ```
 
-### Acidity Related Variables
 
 ```{r echo=FALSE, Univariate_Acidity_profile}
 ggplot(wine, aes(pH)) +
@@ -173,7 +146,6 @@ All of the acidity variables seem to somewhat follow a normal distribution.
 There is one possible exception with _volatile.acidity_.
 There might still be some interesting relationship between these variables.
 
-### Sugar
 
 ```{r echo=FALSE, Univariate_Sugar}
 ggplot(wine, aes(residual.sugar)) +
@@ -184,10 +156,12 @@ ggplot(wine, aes(residual.sugar)) +
   facet_wrap( ~ variant)
 ```
 
-Interesting, I expected _residual.sugar_ to inversely correlate strongly with _alcohol_ since the sugar is converted to alcohol in the fermentation process.
+Interesting, I expected _residual.sugar_ to inversely correlate strongly with 
+_alcohol_ since the sugar is converted to alcohol in the fermentation process.
 But that doesn't seem likely anymore, due to how different the histograms look.
 
-Also, dry wines are likely the ones with the least amounts of _residual.sugar_, so it looks like white wines are more likely sweet then red wines.
+Also, dry wines are likely the ones with the least amounts of _residual.sugar_, 
+so it looks like white wines are more likely sweet then red wines.
 
 ```{r echo=FALSE, Univariate_Chlorides}
 ggplot(wine, aes(chlorides)) +
@@ -202,15 +176,14 @@ ggplot(wine, aes(total.sulfur.dioxide)) +
   geom_histogram(bins = 30)
 ```
 
-It seemsa _total.sulfur.dioxide_ is bimodal. This might be a distinguishing feature for red vs white wines.
+It seems _total.sulfur.dioxide_ is bimodal. This might be a distinguishing
+feature for red vs white wines.
 
 ```{r echo=FALSE, Univariate_Sulfur2}
 ggplot(wine, aes(total.sulfur.dioxide)) +
   geom_histogram(bins = 30) +
   facet_wrap( ~ variant)
 ```
-
-### Expert Opinion - _Quality_
 
 ```{r echo=FALSE, Univariate_Quality}
 ggplot(wine, aes(quality.as.factor)) +
@@ -221,30 +194,13 @@ ggplot(wine, aes(quality.as.factor)) +
   geom_bar() +
   facet_wrap( ~ variant) +
   xlab("quality")
-
-# After some consideration, I decided not to include this next plot
-# but I'll leave it here as a reference
-
-#ggplot(data = wine, aes(quality.as.factor)) +
-  #geom_bar(aes(fill = variant)) +
-  #xlab("quality") +
-  #scale_fill_manual(values=c(redw.col, whitew.col))
 ```
 
 _Quality_ is overwhelmingly 5 or 6 for both wines. The side by side plot seem
 to indicate that white wines are slightly better evaluated.
 
-> **Tip**: Make sure that you leave a blank line between the start / end of
-each code block and the end / start of your Markdown text so that it is
-formatted nicely in the knitted text. Note as well that text on consecutive
-lines is treated as a single space. Make sure you have a blank line between
-your paragraphs so that they too are formatted for easy readability.
-
 # Univariate Analysis
 
-> **Tip**: Now that you've completed your univariate explorations, it's time to
-reflect on and summarize what you've found. Use the questions below to help you
-gather your observations and add your own if you have other thoughts!
 
 ### What is the structure of your dataset?
 
@@ -279,7 +235,8 @@ explained by a difference in distributions for red and white wines.
 Surprisingly, so far, red and white wines seem to follow the same distribution
 on all of the investigated variables, with the exeption of _total.sulfur.oxide_
 and, possibly, _alcohol_ and _quality_.
-All of these exceptions appear to be skewed in favor of larger values for the white variaty. This goes against my intuition in the cases of _alcohol_ and
+All of these exceptions appear to be skewed in favor of larger values for the 
+white variaty. This goes against my intuition in the cases of _alcohol_ and
 _quality_
 
 ### What is/are the main feature(s) of interest in your dataset?
@@ -306,7 +263,9 @@ There is the obvious _pH_ variable, but flavors come with which type of acid is
 present and in which concentration.
 The variables _fixed.acidity_, _volatile.acidity_, and _citric.acid_ should
 help.
-Unfortunately, none of the variables are related to _tannin_ as far as I could find. These are supposed to be complex organic molecules and don't seem to relate to any of the chemical quantities described in the data.
+Unfortunately, none of the variables are related to _tannin_ as far as I could 
+find. These are supposed to be complex organic molecules and don't seem to 
+relate to any of the chemical quantities described in the data.
 
 ### Did you create any new variables from existing variables in the dataset?
 
@@ -316,12 +275,6 @@ quantity is due to the fact that this is the information most universaly
 contained in wine labels.
 
 # Bivariate Plots Section
-
-> **Tip**: Based on what you saw in the univariate plots, what relationships
-between variables might be interesting to look at in this section? Don't limit
-yourself to relationships between a main output feature and one of the
-supporting variables. Try to look at relationships between supporting variables
-as well.
 
 ```{r echo=FALSE, Bivariate_Quality_Alcohol}
 ggplot(data = wine, aes(quality, alcohol)) +
@@ -433,9 +386,10 @@ ggplot(subset(wine, residual.sugar < 40),
   xlab("quality")
 ```
 
-In all of the above boxplots there is an omission, a white wine outlier with 65.8 g/L in _residual sugar_.
+In all of the above boxplots there is an omission, a white wine outlier with 
+65.8 g/L in _residual sugar_.
 
-```{r echo=FALSE, }
+```{r echo=FALSE}
 subset(wine, residual.sugar > 40,
        select = c("quality", "variant","residual.sugar", "alcohol",
                   "density"))
@@ -474,14 +428,15 @@ ggplot(subset(wine, residual.sugar < 40),
   geom_point(alpha=0.05)
 ```
 
-In all of the density plots there is an omission, the same white wine outlier with 65.8 g/L in _residual sugar_, which has a _density_ of 1.03898 g/L.
+In all of the density plots there is an omission, the same white wine outlier 
+with 65.8 g/L in _residual sugar_, which has a _density_ of 1.03898 g/L.
 
 Let's check if _residual.sugar_ explains density well.
 
 ```{r echo=FALSE, warning=FALSE, Bivariate_Sugar_Density}
 ggplot(subset(wine, residual.sugar < 40),
        aes(residual.sugar, density)) +
-  geom_point(alpha=0.1)
+  geom_point(alpha=0.05)
 ```
 
 These are certainly 2 distributions plotted together.
@@ -498,7 +453,7 @@ ggplot(subset(wine, residual.sugar < 20),
 
 Interesting, white wines seem to have 2 distinct distributions in respect to
 density.
-One of these behaviours seem to follow closely what happens with reds, but 
+One of these behaviors seem to follow closely what happens with reds, but 
 in lower densities.
 
 
@@ -571,9 +526,6 @@ For red wines, _citric.acid_ and _fixed.acid_ are well correlated.
 
 # Bivariate Analysis
 
-> **Tip**: As before, summarize what you found in your bivariate explorations
-here. Use the questions below to guide your discussion.
-
 ### Talk about some of the relationships you observed in this part of the \
 investigation. How did the feature(s) of interest vary with other features in \
 the dataset?
@@ -586,15 +538,19 @@ which are overrepresented in the data set.
 It is worth mentioning that the relationship between _density_ and _quality_
 is stronger for white wines.
 Every other interesting relationship with quality apply well enough only for
-red wines, and these are between _quality_ and _alcohol_, _sulphates_ and _citric.acid_.
+red wines, and these are between _quality_ and _alcohol_, _sulphates_ and 
+_citric.acid_.
 
-As for distinguishing the _variant_ variable, in adition to _sulphates_ and _citric.acid_, _residual.sugar_ are likely distributed differently between
+As for distinguishing the _variant_ variable, in adition to _sulphates_ and 
+_citric.acid_, _residual.sugar_ are likely distributed differently between
 variants.
 
 ### Did you observe any interesting relationships between the other features \
 (not the main feature(s) of interest)?
 
-Yes. The variables _density_ and _residual.sugar_ seem to have distinct distributions for red and white wines. More over, there seems to be 2 distinct relationships between these variables within white wines.
+Yes. The variables _density_ and _residual.sugar_ seem to have distinct 
+distributions for red and white wines. More over, there seems to be 2 distinct 
+relationships between these variables within white wines.
 This indicates there is a hidden categorical variable in the white wines 
 category.
 
@@ -606,12 +562,6 @@ the strongest relationship.
 
 # Multivariate Plots Section
 
-> **Tip**: Now it's time to put everything together. Based on what you found in
-the bivariate plots section, create a few multivariate plots to investigate
-more complex interactions between variables. Make sure that the plots that you
-create here are justified by the plots you explored in the previous section. If
-you plan on creating any mathematical models, this is the section where you
-will do that.
 
 ```{r echo=FALSE, warning=FALSE, Multivariate_Sugar_Density}
 ggplot(subset(wine, residual.sugar < 40),
@@ -624,17 +574,21 @@ Starting with the curious relationship between _density_ and _residual.sugar_.
 It seems that, for white wines and fixed density, an increase in residual.sugar
 is related with an increase in _quality_.
 
-Let's say wines with less then 3 g/l in _residual.sugar_ are *dry* wines and the rest are *sweet* wines. Let's check that we can distinguish red from white *dry* wines.
+Let's say wines with less then 3 g/l in _residual.sugar_ are *dry* wines and the
+rest are *sweet* wines. Let's check that we can distinguish red from white *dry*
+wines.
 
 ```{r echo=FALSE, Multivariate_Sugar_Density2}
 ggplot(subset(wine, residual.sugar < 3),
        aes(residual.sugar, density)) +
   geom_jitter(height = 0, aes(color = variant)) +
-  scale_color_manual(values=c(redw.col, whitew.col))
+  scale_color_manual(values=c(redw.color, whitew.color)) +
+  theme(panel.background = element_rect(fill = "grey"))
 
 ggplot(subset(wine, residual.sugar < 3),
        aes(residual.sugar, density)) +
-  geom_jitter(height = 0, aes(color = quality.as.factor))
+  geom_jitter(height = 0, aes(color = quality.as.factor)) +
+  theme(panel.background = element_rect(fill = "grey"))
 ```
 
 Interesting, the relationship with _quality_ observed for white wines seems to
@@ -643,46 +597,58 @@ exist for the *dry* wines as well.
 ```{r echo=FALSE, Multivariate_Sugar_Density3}
 ggplot(subset(wine, residual.sugar > 3 & residual.sugar < 25),
        aes(residual.sugar, density)) +
-  geom_point(alpha = 0.8, aes(color = quality.as.factor))
+  geom_point(alpha = 0.8, aes(color = quality.as.factor)) +
+  theme(panel.background = element_rect(fill = "grey"))
 ```
 
-When restricting to *sweet* wines, this low _density_ higher _residual.sugar_ relationship looks stronger.
+When restricting to *sweet* wines, this low _density_ higher _residual.sugar_ 
+relationship looks stronger.
 
 ```{r echo=FALSE}
 # I just eye-balled angular coeficients for somewhat constant
-# linear relationships for density and residual.sugar
-wine <- transform(wine, dry.density = 1000*density - 4*residual.sugar)
-wine <- transform(wine, sweet.density = 1000*density - 0.533*residual.sugar)
+  # linear relationships for density and residual.sugar
+wine <- transform(wine,
+                  dry.density.sugar = 1000*density - 4*residual.sugar)
+wine <- transform(wine,
+                  sweet.density.sugar = 1000*density - 0.533*residual.sugar)
 
 ggplot(subset(wine, residual.sugar < 3),
-              aes(alcohol, dry.density)) +
+              aes(alcohol, dry.density.sugar)) +
   geom_point(aes(color = quality.as.factor)) +
-  facet_wrap( ~ variant)
+  facet_wrap( ~ variant) +
+  theme(panel.background = element_rect(fill = "grey"))
 
 ggplot(subset(wine, residual.sugar>3 & residual.sugar<25 & variant=="white"),
-              aes(alcohol, sweet.density)) +
-  geom_point(aes(color = quality.as.factor))
+              aes(alcohol, sweet.density.sugar)) +
+  geom_point(aes(color = quality.as.factor)) +
+  theme(panel.background = element_rect(fill = "grey"))
 ```
+
+Notice that, in the above plots, the y-axis measures are different linear
+combinations of the _density_ and _residual.sugar_.
 
 ```{r echo=FALSE}
 ggplot(wine, aes(alcohol, citric.acid)) +
-  geom_point(aes(color = quality.as.factor))
+  geom_point(aes(color = quality.as.factor)) +
+  theme(panel.background = element_rect(fill = "grey"))
 ```
 
 Signals found to discriminate _quality_ seem to work well (linearly), together.
 To build a predictive model for _quality_, I would recomend a hybrid aproach.
 The first step would be to use the bimodal distributions like _residual.sugar_
-to create a *dry-red*, *dry-white* or  *sweet* classifier.
+to create a *dry-red*, *dry-white* or *sweet* classifier.
 Next, a different model for each, which should benefit from dimensionality
 reduction (_PCA_ looks good as relations seem linear).
 
 ```{r echo=FALSE, Citric_Sulphate_Blobs}
 ggplot(subset(wine, citric.acid<1), aes(citric.acid, sulphates)) +
   geom_point(aes(color = quality.as.factor)) +
-  facet_wrap( ~ variant)
+  facet_wrap( ~ variant) +
+  theme(panel.background = element_rect(fill = "grey"))
 
 ggplot(subset(rw, quality < 5 | quality > 6), aes(citric.acid, sulphates)) +
-  geom_point(aes(color = quality.as.factor))
+  geom_point(aes(color = quality.as.factor)) +
+  theme(panel.background = element_rect(fill = "grey"))
 ```
 
 This an example of other feature relations. We can observe that the originaly 
@@ -701,8 +667,8 @@ distinguishing red vs. white _variants_.
 
 ### Were there any interesting or surprising interactions between features?
 
-Yes. There are 2 distinct behaviours in the relation between _density_ and 
-_residual.sugar_. I believe these distinct behaviours distinguish dry and sweet
+Yes. There are 2 distinct behaviors in the relation between _density_ and 
+_residual.sugar_. I believe these distinct behaviors distinguish dry and sweet
 wines.
 The surprising relation is that, for dry wines of some fixed _density_, an
 *increase* in _residual.sugar_ is associated with an *increase* in _quality_.
@@ -711,101 +677,110 @@ The surprising relation is that, for dry wines of some fixed _density_, an
 
 # Final Plots and Summary
 
-> **Tip**: You've done a lot of exploration and have built up an understanding
-of the structure of and relationships between the variables in your dataset.
-Here, you will select three plots from all of your previous exploration to
-present here as a summary of some of your most interesting findings. Make sure
-that you have refined your selected plots for good titling, axis labels (with
-units), and good aesthetic choices (e.g. color, transparency). After each plot,
-make sure you justify why you chose each plot by describing what it shows.
-
 ### Plot One
 ```{r echo=FALSE, Plot_One}
-pl1 <- ggplot(subset(wine, residual.sugar < 25),
-              aes(residual.sugar, density)) +
-        geom_point(alpha = 0.21) +
-        xlab("Residual Sugar (g/L)") +
-        ylab("Density (Kg/L)") +
-        geom_abline()
-
-pl2 <- ggplot(subset(wine, residual.sugar < 25),
-              aes(residual.sugar, density)) +
-        geom_point(alpha = 0.5, aes(color = variant)) +
-        scale_color_manual(values=c(redw.col, whitew.col)) +
-        xlab("Residual Sugar (g/L)") +
-        ylab("Density (Kg/L)")
-
-grid.arrange(pl1, pl2, ncol = 1)
+ggplot(subset(wine, residual.sugar < 25),
+       aes(residual.sugar, density)) +
+  geom_point(alpha = 0.1) +
+  scale_x_continuous(breaks = seq(0, 25, 2.5)) +
+  xlab("Residual Sugar (g/L)") +
+  ylab("Density (Kg/L)") +
+  geom_abline(slope = 1/125, intercept = 121/125,
+              color = "red", linetype = "dashed")
 ```
 
 ### Description One
 
+The relationship of _Density_ and _Residual Sugar_ appear to follow 2 distinct 
+trends. This is likely a difference in composition of dry vs. sweet wines.
 
 ### Plot Two
 ```{r echo=FALSE, Plot_Two}
-
+ggplot(subset(wine, residual.sugar < 25),
+       aes(residual.sugar, density)) +
+  geom_point(alpha = 0.5, aes(color = variant)) +
+  facet_wrap( ~ variant) +
+  scale_color_manual(values=c(redw.color, whitew.color)) +
+  scale_x_continuous(breaks = seq(0, 24, 3)) +
+  xlab("Residual Sugar (g/L)") +
+  ylab("Density (Kg/L)") +
+  theme(panel.background = element_rect(fill = "grey")) +
+  geom_abline(slope = 1/2000, intercept = 993.25/1000,
+              color = "purple", linetype = "dashed")
 ```
 
 ### Description Two
 
+The relationship of _Density_ and _Residual Sugar_ also appear to allow for a 
+linear model to make good predictions on classifying red from white wine
+_variants_.
 
 ### Plot Three
 ```{r echo=FALSE, Plot_Three}
+pl1 <- ggplot(subset(wine, residual.sugar < 3),
+                     aes(alcohol, dry.density.sugar)) +
+         geom_point(aes(color = quality.as.factor)) +
+         xlab("") +
+         ylab("Density - 4* Res. Sugar\n (g/L)") +
+         facet_wrap( ~ variant) +
+         theme(panel.background = element_rect(fill = "grey"),
+               legend.position = "none")
 
+pl2 <- ggplot(subset(wine,
+                     residual.sugar>3 & residual.sugar<25 & variant=="white"),
+                     aes(alcohol, sweet.density.sugar)) +
+         geom_point(aes(color = quality.as.factor)) +
+         xlab("Alcohol (% volume)") +
+         ylab("Density - 0.533* Res. Sugar\n (g/L)") +
+         theme(panel.background = element_rect(fill = "grey"),
+               legend.title=element_blank())
+
+grid.arrange(pl1, pl2, ncol = 1)
 ```
 
 ### Description Three
+
+For dry vs. sweet wines, different linear combinations of _Density_ and 
+_Residual Sugar_ seem to be usefull in predicting good wines.
+Moreover, for dry wines, red and white _variants_ seem to have somewhat distinct
+characteristics for predicting good wines.
 
 ------
 
 # Reflection
 
-> **Tip**: Here's the final step! Reflect on the exploration you performed and
-the insights you found. What were some of the struggles that you went through?
-What went well? What was surprising? Make sure you include an insight into
-future work that could be done with the dataset.
+The _Vinho Verde_ data set consists of 6497 observations of physicochemical 
+measures and subjective sensory avaluations. The set is unbalanced, containing
+3 times more white wines than red wines (4898 vs. 1599).
 
-> **Tip**: Don't forget to remove this, and the other **Tip** sections before
-saving your final work and knitting the final report!
+There are only 13 variables, which made possible to avaluate most of them 
+indivualy, before looking for relationships within variables.
+In this first exploration, some variables had interesting behaviors.
+_Alcohol_ had the more spead out variance.
+Some variables looked bimodal, which made for interesting explorations in the
+potential differences of red and white wines.
+_Density_ ended up being the most interesting of these variables.
 
+In exploring _quality_ and how that relates to other variables, _alcohol_ was 
+the clear signal of good wines in agregate.
+We ended up finding the unbalanced data were hiding some _quality_ identifying
+variables, as red wines had more variables relating to _quality_.
+
+But, in the end, it became appearant there were 3 distinct categories of  wine, 
+for which the physicochemical variables held different relations to _quality_.
+With this realization, the best strategy in finding good wines trough these 
+variables seem to try to classify them in one of 3 categories first: *red*,
+*dry-white* or *sweet-white*.
+Both in identifying red from white or dry from sweet, _density_ and _residual 
+sugar_ were good variables.
+_Alcohol_ can then be added to the specific model to predict good wines.
+
+The most relevant limitation of the data set is the _Denomination of Origin_.
+All of the wines in the data set are from the same region in Portugal.
+The results are likely not generalizable.
+It was somewhat troublesome to deal with the unbalance in the variaties.
+This was specially the case since red wines had more variables signalling
+good wines.
+When taking the agregate data these relationships were masked.
 
 ------
-
-# Not sure if this fits somewhere
-
-```{r echo=FALSE}
-plr <- ggplot(rw, aes(alcohol)) +
-        geom_histogram(bins = 30, aes(y = (..count..)/sum(..count..)),
-                       fill = redw.col, color = "black") +
-        scale_y_continuous(labels = scales::percent, limits = c(0,0.16)) +
-        scale_x_continuous(breaks = seq(8,15,1)) +
-        ylab("relative frequencies") +
-        xlab("alcohol (reds)")
-plw <- ggplot(ww, aes(alcohol)) +
-        geom_histogram(bins = 30, aes(y = (..count..)/sum(..count..)),
-                       fill = whitew.col, color = "black") +
-        scale_y_continuous(labels = scales::percent, limits = c(0,0.16)) +
-        scale_x_continuous(breaks = seq(8,15,1)) +
-        ylab("relative frequencies") +
-        xlab("alcohol (whites)")
-
-grid.arrange(plr, plw, ncol=1)
-```
-```{r echo=FALSE}
-plr <- ggplot(rw, aes(sulphates)) +
-        geom_histogram(bins = 30, aes(y = (..count..)/sum(..count..)),
-                       fill = redw.col, color = "black") +
-        scale_y_continuous(labels = scales::percent, limits = c(0,0.32)) +
-        scale_x_continuous(limits = c(0,2.2), breaks = seq(0,2.2,0.2)) +
-        ylab("relative frequencies") +
-        xlab("sulphates (reds)")
-plw <- ggplot(ww, aes(sulphates)) +
-        geom_histogram(bins = 30, aes(y = (..count..)/sum(..count..)),
-                       fill = whitew.col, color = "black") +
-        scale_y_continuous(labels = scales::percent, limits = c(0,0.32)) +
-        scale_x_continuous(limits = c(0,2.2), breaks = seq(0,2.2,0.2)) +
-        ylab("relative frequencies") +
-        xlab("sulphates (whites)")
-
-grid.arrange(plr, plw, ncol=1)
-```
