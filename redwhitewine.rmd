@@ -1,5 +1,12 @@
 ---
-output: html_document
+title: "Analysis on Vinho Verde data set"
+author: "Fabio Tosetto Reale"
+date: "November 8th, 2018"
+output:
+  html_document:
+    toc: true
+    toc_depth: 3
+    toc_float: true
 editor_options: 
   chunk_output_type: inline
 ---
