@@ -7,17 +7,7 @@ Exploration on _Vinho Verde_ Wine by Fabio Tosetto Reale
 ========================================================
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, packages}
-# Load all of the packages that you end up using in your analysis in this code
-# chunk.
-
-# Notice that the parameter "echo" was set to FALSE for this code chunk. This
-# prevents the code from displaying in the knitted HTML output. You should set
-# echo=FALSE for all code chunks in your file, unless it makes sense for your
-# report to show the code that generated a particular plot.
-
-# The other parameters for "message" and "warning" should also be set to FALSE
-# for other code chunks once you have verified that each plot comes out as you
-# want it to. This will clean up the flow of your report.
+# Loads all of the required packages
 
 library(ggplot2)
 library(gridExtra)
@@ -25,20 +15,22 @@ library(gridExtra)
 ```
 
 ```{r echo=FALSE, Load_the_Data}
-# Data comes from 2 source files
+# Load data from 2 source files into 2 data frames
 rw <- read.csv("wineQualityReds.csv")
 ww <- read.csv("wineQualityWhites.csv")
 
-# Then we create the variant variable in each one to
-# finally bind them into a single data frame called wine.
+# Then, a variant variable is created in each data frame to
+  # finally bind them into a single data frame called wine.
 rw$variant <- "red"
 ww$variant <- "white"
 wine <- rbind(rw, ww)
 
+# total.acidity variable is created.
+#This is both convenient and makes sense from the perspective of the analysis
 wine$variant <- factor(wine$variant)
 wine <- transform(wine, total.acidity = fixed.acidity + volatile.acidity)
 
-# defining conveniently named string variables.
+# Defines conveniently named string variables.
 # To be used in plots to color points with intuitive wine colors.
 redw.color <- "#a8064a"
 whitew.color <- "#eddb8e"
@@ -69,9 +61,12 @@ str(wine)
 ```
 
 ```{r echo=FALSE, summary_last_data_transformation}
+# Creates a factor variable from the descrete integer variable quality.
+# This is convenient for boxplots and color aesthetics.
 wine$quality.as.factor <- factor(wine$quality, ordered = TRUE,
                                   levels = seq(3,9,1))
 
+# Conveniently named subsets. One for each variant
 rw <- subset(wine, variant == "red")
 ww <- subset(wine, variant == "white")
 
@@ -81,6 +76,7 @@ summary(wine)
 # Univariate Plots Section
 
 ```{r echo=FALSE, Univariate_Variant_distribution}
+# Simple bar plot for variant
 ggplot(wine, aes(variant)) +
   geom_bar()
 ```
@@ -89,10 +85,13 @@ This will be a good visual reminder of how overrepresented white wines are in
 this data set.
 
 ```{r echo=FALSE, Univariate_Alcohol}
+# Histograms of alcohol levels
+  # bins = 30 is default behavior. Explicit statement prevents warning
 ggplot(wine, aes(alcohol)) +
   geom_histogram(bins = 30) +
   scale_x_continuous(breaks = seq(8,14,1))
 
+# Histogram of alcohol levels faceted by variant
 ggplot(wine, aes(alcohol)) +
   geom_histogram(bins = 30) +
   facet_wrap( ~ variant) +
@@ -106,9 +105,12 @@ But it might be an artifice of the inbalance of the data.
 This requires further investigation.
 
 ```{r echo=FALSE, Univariate_Sulphates}
+# Histograms of sulphates concentration
+  # bins = 30 is default behavior. Explicit statement prevents warning
 ggplot(wine, aes(sulphates)) +
   geom_histogram(bins = 30)
 
+# Histogram of sulphates concentration faceted by variant
 ggplot(wine, aes(sulphates)) +
   geom_histogram(bins = 30) +
   facet_wrap( ~ variant)
@@ -120,12 +122,24 @@ There doesn't seem to be significant differences in the distributions, but I'll
 investigate this a little more.
 
 ```{r echo=FALSE, Univariate_Density}
-ggplot(wine, aes(density)) +
+# Histograms of density
+  ggplot(wine, aes(density)) +
   geom_histogram(binwidth = 0.0005)
+
+# Histogram for density faceted by variant
+ggplot(wine, aes(density)) +
+  geom_histogram(binwidth = 0.0005) +
+  facet_wrap( ~ variant)
 ```
 
+Density seems to be bimodal.
+The faceted plots indicate there is likely a difference in distributions for
+red and white wines.
 
 ```{r echo=FALSE, Univariate_Acidity_profile}
+# Histograms for acidity related variables:
+# pH, total.acidity, fixed.acidity and citric acid
+  # bins = 30 is default behavior. Explicit statement prevents warning
 ggplot(wine, aes(pH)) +
   geom_histogram(bins = 50)
 
@@ -148,9 +162,12 @@ There might still be some interesting relationship between these variables.
 
 
 ```{r echo=FALSE, Univariate_Sugar}
+# Histograms for residual.sugar
+  # bins = 30 is default behavior. Explicit statement prevents warning
 ggplot(wine, aes(residual.sugar)) +
   geom_histogram(bins = 30)
 
+# Histogram for residual.sugar faceted by variant
 ggplot(wine, aes(residual.sugar)) +
   geom_histogram(bins = 30) +
   facet_wrap( ~ variant)
@@ -164,11 +181,16 @@ Also, dry wines are likely the ones with the least amounts of _residual.sugar_,
 so it looks like white wines are more likely sweet then red wines.
 
 ```{r echo=FALSE, Univariate_Chlorides}
+# Histogram for chlorides
+  # bins = 30 is default behavior. Explicit statement prevents warning
 ggplot(wine, aes(chlorides)) +
   geom_histogram(bins = 30)
 ```
 
 ```{r echo=FALSE, Univariate_Sulfur}
+# Histograms for sulfur dioxide variables:
+# free.sulfur.dioxide, total.sulfur.dioxide
+  # bins = 30 is default behavior. Explicit statement prevents warning
 ggplot(wine, aes(free.sulfur.dioxide)) +
   geom_histogram(bins = 30)
 
@@ -176,20 +198,24 @@ ggplot(wine, aes(total.sulfur.dioxide)) +
   geom_histogram(bins = 30)
 ```
 
-It seems _total.sulfur.dioxide_ is bimodal. This might be a distinguishing
-feature for red vs white wines.
+It seems _total.sulfur.dioxide_ is bimodal.
+Like _density_, this might be a distinguishing feature for red vs white wines.
 
 ```{r echo=FALSE, Univariate_Sulfur2}
+# Histogram for total.sulfur.dioxide faceted by variant
+  # bins = 30 is default behavior. Explicit statement prevents warning
 ggplot(wine, aes(total.sulfur.dioxide)) +
   geom_histogram(bins = 30) +
   facet_wrap( ~ variant)
 ```
 
 ```{r echo=FALSE, Univariate_Quality}
+# Bar plots for quality. Factor version of the variable used for convenience
 ggplot(wine, aes(quality.as.factor)) +
   geom_bar() +
   xlab("quality")
 
+# Bar plot for quality faceted by variant
 ggplot(wine, aes(quality.as.factor)) +
   geom_bar() +
   facet_wrap( ~ variant) +
@@ -277,11 +303,15 @@ contained in wine labels.
 # Bivariate Plots Section
 
 ```{r echo=FALSE, Bivariate_Quality_Alcohol}
+# Scatter plots for alcohol and quality
+# Points are jittered to deal with overplotting,
+  #but only for quality (since it is discrete)
 ggplot(data = wine, aes(quality, alcohol)) +
   geom_jitter(alpha = 0.25, height = 0) +
   scale_x_continuous(breaks = seq(3,9,1)) +
   scale_y_continuous(breaks = seq(8,15,1))
 
+# Scatter plot for alcohol and quality faceted by variant
 ggplot(data = wine, aes(quality, alcohol)) +
   geom_jitter(alpha = 0.25, height = 0) +
   scale_x_continuous(breaks = seq(3,9,1)) +
@@ -293,10 +323,12 @@ Looks like the higer _quality_ wines are more alcoholic.
 Let's see if a box plot looks better.
 
 ```{r echo=FALSE, Bivariate_Quality_Alcohol_2}
+# Box plots for alcohol and quality
 ggplot(wine, aes(quality.as.factor, alcohol)) +
   geom_boxplot() +
   xlab("quality")
 
+# BOx plot for alcohol and quality faceted by variant
 ggplot(wine, aes(quality.as.factor, alcohol)) +
   geom_boxplot() +
   xlab("quality") +
@@ -311,10 +343,10 @@ Also, the distribution for _alcohol_ now seems to be the same for red and white
 wines, so I'll just plot a qq-plot.
 
 ```{r echo=FALSE, QQ_Alcohol}
-# Plotting a qq plot where the points are the percentiles
+# Plots a qq plot where the points are the percentiles
   # percent is a vector with the probability to pass in the quantile function.
 # Then, geom_point must get these points in the aes() wrapper.
-# Notice that rw and ww are subsets of wine containing, respectively,
+# Notice that rw and ww are named subsets of wine containing, respectively,
   # only red or white wines.
 # Finally, we call geom_abline to plot a dashed y = x line.
 percent <- seq(0.01, 1.0, 0.01)
@@ -329,10 +361,12 @@ ggplot() +
 The distributions are close enough to one another to be considered the same.
 
 ```{r echo=FALSE, Bivariate_Quality_Acidity}
+# Box plots for alcohol and quality
 ggplot(wine, aes(quality.as.factor, total.acidity)) +
   geom_boxplot() +
   xlab("quality")
 
+# Box plot for alcohol and quality faceted by variant
 ggplot(wine, aes(quality.as.factor, total.acidity)) +
   geom_boxplot() +
   xlab("quality") +
@@ -347,6 +381,13 @@ white wines.
 I'll plot a qq-plot to find out.
 
 ```{r echo=FALSE, QQ_Acidity}
+# Plots a qq plot where the points are the percentiles
+  # percent is a vector with the probability to pass in the quantile function,
+  # and was defined previously in the code.
+# Then, geom_point must get these points in the aes() wrapper.
+# Notice that rw and ww are named subsets of wine containing, respectively,
+  # only red or white wines.
+# Finally, we call geom_abline to plot a dashed y = x line.
 ggplot() +
   geom_point(aes(x = quantile(rw$total.acidity, percent),
                  y = quantile(ww$total.acidity, percent))) +
@@ -360,10 +401,12 @@ Alright, that settles it. Red wines are definetly more acidic.
 Now, getting back to quality, let's see if _citric.acid_ gives us some insight.
 
 ```{r echo=FALSE}
+# Box plots for citric.acid and quality
 ggplot(wine, aes(quality.as.factor, citric.acid)) +
   geom_boxplot() +
   xlab("quality")
 
+# Box plot for citric.acid and quality faceted by variant
 ggplot(wine, aes(quality.as.factor, citric.acid)) +
   geom_boxplot() +
   xlab("quality") +
@@ -374,11 +417,15 @@ Now, that is interesting! The _citric.acid_ variable seems to predict _quality_
 for red wines only.
 
 ```{r echo=FALSE, warning=FALSE, Bivariate_Quality_Sugar}
+# Box plots for residual.sugar and quality
+# Data passed is a subset of wine.
+  # This was done to remove an outlier from the plot
 ggplot(subset(wine, residual.sugar < 40),
        aes(quality.as.factor, residual.sugar)) +
   geom_boxplot() +
   xlab("quality")
 
+# Box plot for residual.sugar and quality faceted by variant
 ggplot(subset(wine, residual.sugar < 40),
        aes(quality.as.factor, residual.sugar)) +
   geom_boxplot() +
@@ -390,6 +437,8 @@ In all of the above boxplots there is an omission, a white wine outlier with
 65.8 g/L in _residual sugar_.
 
 ```{r echo=FALSE}
+# Creates a subset containing the points omited in the above plot
+  # only a few variables are selected for ease of visualization
 subset(wine, residual.sugar > 40,
        select = c("quality", "variant","residual.sugar", "alcohol",
                   "density"))
@@ -404,11 +453,16 @@ Also, white wines are largely sweeter then reds in their distributions, no
 qq-plot required for this observation.
 
 ```{r echo=FALSE, warning=FALSE, Bivariate_Quality_Density}
+# Box plots for residual.sugar and quality
+# Data passed is a subset of wine.
+  # This was done to remove an outlier from the plot. The data is subset by
+    # residual.sugar because it is the same outlier identified before
 ggplot(subset(wine, residual.sugar < 40),
        aes(quality.as.factor, density)) +
   geom_boxplot() +
   xlab("quality")
 
+# Box plot for residual.sugar and quality faceted by variant
 ggplot(subset(wine, residual.sugar < 40),
        aes(quality.as.factor, density)) +
   geom_boxplot() +
@@ -423,6 +477,10 @@ relationship might be superfluous.
 Let's see how related are they.
 
 ```{r echo=FALSE, warning=FALSE, Bivariate_Alcohol_Density}
+# Scatter plot for density and alcohol
+# Data passed is a subset of wine.
+  # This was done to remove an outlier from the plot. The data is subset by
+    # residual.sugar because it is the same outlier identified before
 ggplot(subset(wine, residual.sugar < 40),
        aes(alcohol, density)) +
   geom_point(alpha=0.05)
@@ -434,6 +492,10 @@ with 65.8 g/L in _residual sugar_, which has a _density_ of 1.03898 g/L.
 Let's check if _residual.sugar_ explains density well.
 
 ```{r echo=FALSE, warning=FALSE, Bivariate_Sugar_Density}
+# Scatter plot for density and residual.sugar
+# Data passed is a subset of wine.
+  # This was done to remove an outlier from the plot. The data is subset by
+    # residual.sugar because it is the same outlier identified before
 ggplot(subset(wine, residual.sugar < 40),
        aes(residual.sugar, density)) +
   geom_point(alpha=0.05)
@@ -444,6 +506,8 @@ Most likely, this is a distinguishing feature for red and white wines.
 Let's see, subseting on wines with less than 20 g/L in _residual.sugar_
 
 ```{r echo=FALSE, warning=FALSE, Bivariate_Sugar_Density2}
+# Scatter plot for density and residual.sugar faceted by variant
+# Data is subset to zoom in on lower values
 ggplot(subset(wine, residual.sugar < 20),
        aes(residual.sugar, density)) +
   geom_point(alpha=0.05) +
@@ -458,10 +522,12 @@ in lower densities.
 
 
 ```{r echo=FALSE, Bivariate_Quality_Sulphates}
+# Box plots for sulphates and quality
 ggplot(wine,aes(quality.as.factor,sulphates)) +
   geom_boxplot() +
   xlab("quality")
 
+# Box plots for sulphates and quality faceted by variant
 ggplot(wine,aes(quality.as.factor,sulphates)) +
   geom_boxplot() +
   facet_wrap(~variant) +
@@ -472,9 +538,11 @@ Much like _citric.acid_, median _sulphates_ values increase with _quality_.
 Let's see if there is some interesting relationship between them.
 
 ```{r echo=FALSE, Bivariate_Red_Citric_Sulphates}
+# Scatter plots for citric.acid and sulphates
 ggplot(wine, aes(citric.acid, sulphates)) +
   geom_point(alpha=0.1)
 
+# Scatter plot for citric.acid and sulphates faceted by variant
 ggplot(wine, aes(citric.acid, sulphates)) +
   geom_point(alpha=0.1) +
   facet_wrap( ~ variant)
@@ -483,9 +551,12 @@ ggplot(wine, aes(citric.acid, sulphates)) +
 Disappointing! I'll investigate in more detail later.
 
 ```{r echo=FALSE, Bivariate_Acidity_Alcohol}
+# Scatter plots for alcohol and total.acidity
 ggplot(wine, aes(alcohol, total.acidity)) +
   geom_point(alpha = 0.1)
 
+# Scatter plots for alcohol and acidity variables faceted by variant:
+  # total.acidity and pH
 ggplot(wine, aes(alcohol, total.acidity)) +
   geom_point(alpha = 0.1) +
   facet_wrap( ~ variant)
@@ -501,9 +572,11 @@ correlate tendency.
 The fact they don't might explain why most wines are not well evaluated.
 
 ```{r echo=FALSE, Bivariate_Acidities}
+# Scatter plots for fixed.acidity and volatile.acidity
 ggplot(wine, aes(fixed.acidity, volatile.acidity)) +
   geom_point(alpha = 0.1)
 
+# Scatter plot for fixed.acidity and volatile.acidity faceted by variant
 ggplot(wine, aes(fixed.acidity, volatile.acidity)) +
   geom_point(alpha = 0.1) +
   facet_wrap( ~ variant)
@@ -513,9 +586,11 @@ As bivariate distribution goes, red wines have more variance within both acidity
 measures.
 
 ```{r echo=FALSE, Bivariate_Fixed_Citrics}
+# Scatter plots for citric.acid and fixed.acidity
 ggplot(wine, aes(fixed.acidity, citric.acid)) +
   geom_point(alpha = 0.1)
 
+# Scatter plots for citric.acid and fixed.acidity faceted by variant
 ggplot(wine, aes(fixed.acidity, citric.acid)) +
   geom_point(alpha = 0.1) +
   facet_wrap( ~ variant)
@@ -564,6 +639,9 @@ the strongest relationship.
 
 
 ```{r echo=FALSE, warning=FALSE, Multivariate_Sugar_Density}
+# Scatter plot of residual.sugar and density
+  # faceted by variant and colored by quality
+# Once again, data is subset to exclude one outlier
 ggplot(subset(wine, residual.sugar < 40),
        aes(residual.sugar, density)) +
   geom_point(alpha = 0.5, aes(color = quality.as.factor)) +
@@ -579,12 +657,18 @@ rest are *sweet* wines. Let's check that we can distinguish red from white *dry*
 wines.
 
 ```{r echo=FALSE, Multivariate_Sugar_Density2}
+# Scatter plot of residual.sugar and density colored by variant
+# Data is subset to zoom in the low end of residual.sugar levels
+# Points are jittered to deal with overplotting
+# Points are colored in intuitive wine colors and background is made darker
+  # to interact bertter with the chosen wine colors
 ggplot(subset(wine, residual.sugar < 3),
        aes(residual.sugar, density)) +
   geom_jitter(height = 0, aes(color = variant)) +
   scale_color_manual(values=c(redw.color, whitew.color)) +
   theme(panel.background = element_rect(fill = "grey"))
 
+# Scatter plot of residual sugar and density colored by quality
 ggplot(subset(wine, residual.sugar < 3),
        aes(residual.sugar, density)) +
   geom_jitter(height = 0, aes(color = quality.as.factor)) +
@@ -595,6 +679,8 @@ Interesting, the relationship with _quality_ observed for white wines seems to
 exist for the *dry* wines as well.
 
 ```{r echo=FALSE, Multivariate_Sugar_Density3}
+# Scatter plot of residual sugar and density colored by quality
+# Data is subset to zoom on higher residual.sugar values, but avoiding outliers
 ggplot(subset(wine, residual.sugar > 3 & residual.sugar < 25),
        aes(residual.sugar, density)) +
   geom_point(alpha = 0.8, aes(color = quality.as.factor)) +
@@ -604,20 +690,29 @@ ggplot(subset(wine, residual.sugar > 3 & residual.sugar < 25),
 When restricting to *sweet* wines, this low _density_ higher _residual.sugar_ 
 relationship looks stronger.
 
-```{r echo=FALSE}
-# I just eye-balled angular coeficients for somewhat constant
-  # linear relationships for density and residual.sugar
+```{r echo=FALSE, Density_Sugar_Combinations}
+# Eye-balled angular coeficients for somewhat constant linear relationships
+  # for density and residual.sugar
+# There are 2 distinct relationships made, one for dry and one for sweet wines
+# 1000*density can be understood as converting density to g/L which is the unit
+  # used elsewhere in the data.
 wine <- transform(wine,
                   dry.density.sugar = 1000*density - 4*residual.sugar)
 wine <- transform(wine,
                   sweet.density.sugar = 1000*density - 0.533*residual.sugar)
 
+# Scatter plot of alcohol and the linear combination for dry wines
+  # faceted by variant and colored by quality
+# Data is subset to zoom in on dry wines
 ggplot(subset(wine, residual.sugar < 3),
               aes(alcohol, dry.density.sugar)) +
   geom_point(aes(color = quality.as.factor)) +
   facet_wrap( ~ variant) +
   theme(panel.background = element_rect(fill = "grey"))
 
+# Scatter plot of alcohol and the linear combination for dry wines
+  # colored by quality
+# Data is subset to zoom in on sweet wines but avoiding outliers
 ggplot(subset(wine, residual.sugar>3 & residual.sugar<25 & variant=="white"),
               aes(alcohol, sweet.density.sugar)) +
   geom_point(aes(color = quality.as.factor)) +
@@ -628,6 +723,7 @@ Notice that, in the above plots, the y-axis measures are different linear
 combinations of the _density_ and _residual.sugar_.
 
 ```{r echo=FALSE}
+# Scatter plot for citric.acid and alcohol colored by quality
 ggplot(wine, aes(alcohol, citric.acid)) +
   geom_point(aes(color = quality.as.factor)) +
   theme(panel.background = element_rect(fill = "grey"))
@@ -641,11 +737,16 @@ Next, a different model for each, which should benefit from dimensionality
 reduction (_PCA_ looks good as relations seem linear).
 
 ```{r echo=FALSE, Citric_Sulphate_Blobs}
+# Scatter plot for citric.acid and sulphates
+  # faceted by variant and colored by quality
+# Data is subset to avoid high citric.acid outliers
 ggplot(subset(wine, citric.acid<1), aes(citric.acid, sulphates)) +
   geom_point(aes(color = quality.as.factor)) +
   facet_wrap( ~ variant) +
   theme(panel.background = element_rect(fill = "grey"))
 
+# Scatter plot for citric.acid and sulphates colored by quality
+# Data is subset to remove 5 and 6 quality wines
 ggplot(subset(rw, quality < 5 | quality > 6), aes(citric.acid, sulphates)) +
   geom_point(aes(color = quality.as.factor)) +
   theme(panel.background = element_rect(fill = "grey"))
@@ -679,6 +780,9 @@ The surprising relation is that, for dry wines of some fixed _density_, an
 
 ### Plot One
 ```{r echo=FALSE, Plot_One}
+# Scatter plot for density and residual.sugar
+# Data is subset to remove high residual.sugar outliers
+# Added a first aproximation line to use in classifying dry vs sweet wines
 ggplot(subset(wine, residual.sugar < 25),
        aes(residual.sugar, density)) +
   geom_point(alpha = 0.1) +
@@ -696,6 +800,9 @@ trends. This is likely a difference in composition of dry vs. sweet wines.
 
 ### Plot Two
 ```{r echo=FALSE, Plot_Two}
+# Scatter plot for residual.sugar and density faceted by variant
+# Data is subset to remove high residual.sugar outliers
+# Added a first aproximation line to use in classifying red vs white wines
 ggplot(subset(wine, residual.sugar < 25),
        aes(residual.sugar, density)) +
   geom_point(alpha = 0.5, aes(color = variant)) +
@@ -717,11 +824,13 @@ _variants_.
 
 ### Plot Three
 ```{r echo=FALSE, Plot_Three}
+# These are mostly the same plots in the Density_Sugar_Combination chunk
+  # with some adjustments to polish presentation
 pl1 <- ggplot(subset(wine, residual.sugar < 3),
                      aes(alcohol, dry.density.sugar)) +
          geom_point(aes(color = quality.as.factor)) +
          xlab("") +
-         ylab("Density - 4* Res. Sugar\n (g/L)") +
+         ylab("Density - 4 * Res. Sugar\n (g/L)") +
          facet_wrap( ~ variant) +
          theme(panel.background = element_rect(fill = "grey"),
                legend.position = "none")
@@ -731,7 +840,7 @@ pl2 <- ggplot(subset(wine,
                      aes(alcohol, sweet.density.sugar)) +
          geom_point(aes(color = quality.as.factor)) +
          xlab("Alcohol (% volume)") +
-         ylab("Density - 0.533* Res. Sugar\n (g/L)") +
+         ylab("Density - 0.533 * Res. Sugar\n (g/L)") +
          theme(panel.background = element_rect(fill = "grey"),
                legend.title=element_blank())
 
@@ -768,12 +877,20 @@ variables, as red wines had more variables relating to _quality_.
 
 But, in the end, it became appearant there were 3 distinct categories of  wine, 
 for which the physicochemical variables held different relations to _quality_.
-With this realization, the best strategy in finding good wines trough these 
-variables seem to try to classify them in one of 3 categories first: *red*,
-*dry-white* or *sweet-white*.
-Both in identifying red from white or dry from sweet, _density_ and _residual 
-sugar_ were good variables.
-_Alcohol_ can then be added to the specific model to predict good wines.
+
+With the above realization in mind, future work aiming to create predictors for
+good wines should focus on a strategy to, in a first step, trying to classify
+wines in one of 3 categories: *red*, *dry-white* or *sweet-white*.
+Both in identifying _red_ from _white_ or _dry_ from _sweet_, _density_ and
+_residual sugar_ are usefull variables.
+There are some variables which seem promising in the identification of _red_
+wines from _white_ ones.
+These include _total.sulfur.dioxide_, _total.acidity_ and _sulphates_.
+A different, specific model can be made for each of these 3 classified wines.
+_Alcohol_ is relevant for all of these models.
+For _white_ wines (both dry and sweet), _density_ and _residual sugar_ seem to be the best variables to include in the model (after _alcohol_).
+For _red_ wines, on the other hand, other variables seem best, like _sulphates_
+or _citric acid_.
 
 The most relevant limitation of the data set is the _Denomination of Origin_.
 All of the wines in the data set are from the same region in Portugal.
